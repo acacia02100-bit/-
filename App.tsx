@@ -14,19 +14,27 @@ const App: React.FC = () => {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
 
   useEffect(() => {
-    const storedChildren = localStorage.getItem('camille_children');
-    const storedArtworks = localStorage.getItem('camille_artworks');
+    try {
+      const storedChildren = localStorage.getItem('camille_children');
+      const storedArtworks = localStorage.getItem('camille_artworks');
 
-    if (storedChildren) setChildren(JSON.parse(storedChildren));
-    else {
+      if (storedChildren) {
+        setChildren(JSON.parse(storedChildren));
+      } else {
+        setChildren(INITIAL_CHILDREN);
+        localStorage.setItem('camille_children', JSON.stringify(INITIAL_CHILDREN));
+      }
+
+      if (storedArtworks) {
+        setArtworks(JSON.parse(storedArtworks));
+      } else {
+        setArtworks(INITIAL_ARTWORKS);
+        localStorage.setItem('camille_artworks', JSON.stringify(INITIAL_ARTWORKS));
+      }
+    } catch (error) {
+      console.warn("LocalStorage access failed. Using initial data.", error);
       setChildren(INITIAL_CHILDREN);
-      localStorage.setItem('camille_children', JSON.stringify(INITIAL_CHILDREN));
-    }
-
-    if (storedArtworks) setArtworks(JSON.parse(storedArtworks));
-    else {
       setArtworks(INITIAL_ARTWORKS);
-      localStorage.setItem('camille_artworks', JSON.stringify(INITIAL_ARTWORKS));
     }
   }, []);
 
@@ -40,14 +48,36 @@ const App: React.FC = () => {
     if (currentPage !== 'HOME') {
       setCurrentPage('HOME');
       setSelectedChildId(null);
-      // Wait for re-render then scroll
+      // Wait for re-render before scrolling
       setTimeout(() => {
         const element = document.getElementById(sectionId);
-        element?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
+        if (element) {
+          const offset = 80; // Navbar height
+          const bodyRect = document.body.getBoundingClientRect().top;
+          const elementRect = element.getBoundingClientRect().top;
+          const elementPosition = elementRect - bodyRect;
+          const offsetPosition = elementPosition - offset;
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      }, 150);
     } else {
       const element = document.getElementById(sectionId);
-      element?.scrollIntoView({ behavior: 'smooth' });
+      if (element) {
+        const offset = 80;
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elementRect = element.getBoundingClientRect().top;
+        const elementPosition = elementRect - bodyRect;
+        const offsetPosition = elementPosition - offset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
     }
   };
 
@@ -66,8 +96,12 @@ const App: React.FC = () => {
   const updateData = (newChildren: Child[], newArtworks: Artwork[]) => {
     setChildren(newChildren);
     setArtworks(newArtworks);
-    localStorage.setItem('camille_children', JSON.stringify(newChildren));
-    localStorage.setItem('camille_artworks', JSON.stringify(newArtworks));
+    try {
+      localStorage.setItem('camille_children', JSON.stringify(newChildren));
+      localStorage.setItem('camille_artworks', JSON.stringify(newArtworks));
+    } catch (e) {
+      console.error("Failed to save to localStorage", e);
+    }
   };
 
   return (
@@ -114,7 +148,7 @@ const App: React.FC = () => {
             <p className="text-stone-500 font-medium">결과를 소비하지 않는 곳, 아이의 생각과 시간이 기록되는 공간</p>
             <p className="text-stone-400 text-sm">서울특별시 예술로 123 까미유미뇽 아카이브 | 02-1234-5678</p>
           </div>
-          <div className="flex space-x-6 mb-12">
+          <div className="flex space-x-6 mb-12 text-sm">
             <a href="#" className="text-stone-400 hover:text-stone-800 transition-colors">Instagram</a>
             <a href="#" className="text-stone-400 hover:text-stone-800 transition-colors">Blog</a>
             <a href="#" className="text-stone-400 hover:text-stone-800 transition-colors">Contact</a>

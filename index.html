@@ -14,22 +14,31 @@
         font-family: 'Pretendard', sans-serif;
         background-color: #F9F8F6;
         color: #2D2D2D;
+        scroll-behavior: smooth;
       }
       .serif {
-        font-family: 'Noto+Serif+KR', serif;
+        font-family: 'Noto Serif KR', serif;
+      }
+      /* 스크롤 시 상단 네비게이션 가림 방지 */
+      :target {
+        scroll-margin-top: 5rem;
       }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
-  }
-}
-</script>
-</head>
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@19.0.0",
+        "react/": "https://esm.sh/react@19.0.0/",
+        "react-dom": "https://esm.sh/react-dom@19.0.0",
+        "react-dom/": "https://esm.sh/react-dom@19.0.0/",
+        "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+        "react/jsx-runtime": "https://esm.sh/react@19.0.0/jsx-runtime"
+      }
+    }
+    </script>
+  </head>
   <body>
     <div id="root"></div>
+    <script type="module" src="index.tsx"></script>
   </body>
 </html>
